@@ -1,4 +1,5 @@
 # BookManagement
+Neamtu Alexandra  naie1963@scs.ubbcluj.ro
 
 BookManagement is a mobile management app for libraries. It will help keep track of the borrowed books and notify you when you have to bring them back. You'll have a huge collection of books with all sorts of categories from which you can choose if the desired one is still available and find out where there are in the library. 
 
