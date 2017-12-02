@@ -1,5 +1,6 @@
 package com.example.alexandraneamtu.bookmanagement;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,12 +8,16 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.example.alexandraneamtu.bookmanagement.model.Book;
 import com.example.alexandraneamtu.bookmanagement.repository.BookRepository;
 
 import static com.example.alexandraneamtu.bookmanagement.R.id.textView;
 
 public class DetailsActivity extends AppCompatActivity {
     //BookRepository bookRepository = new BookRepository();
+
+    int id;
+    int image;
 
 
     @Override
@@ -22,8 +27,8 @@ public class DetailsActivity extends AppCompatActivity {
         String title = getIntent().getStringExtra("title");
         String author = getIntent().getStringExtra("author");
         String description = getIntent().getStringExtra("description");
-        int image = getIntent().getIntExtra("image",0);
-
+        image = getIntent().getIntExtra("image",0);
+        id = getIntent().getIntExtra("id",0);
 
         showDetails(title,author,description,image);
     }
@@ -46,10 +51,17 @@ public class DetailsActivity extends AppCompatActivity {
         String author = authorView.getText().toString();
         TextView descriptionView = (TextView)findViewById(R.id.description);
         String description = descriptionView.getText().toString();
+
         //bookRepository.updateBook(title,author,description);
-        MainActivity.getBookRepository().updateBook(title,author,description);
+        Intent intent = new Intent();
+        intent.putExtra("id2",id);
+        intent.putExtra("title2",title);
+        intent.putExtra("author2",author);
+        intent.putExtra("description2",description);
+        intent.putExtra("image2",image);
 
-
+        setResult(RESULT_OK,intent);
+        finish();
     }
 
 

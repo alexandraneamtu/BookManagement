@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:text="Prepare book"
         android:textAllCaps="false"
+        android:layout_gravity="center_horizontal"
         />
 
 </LinearLayout>

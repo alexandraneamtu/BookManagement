@@ -33,11 +33,11 @@ public class PrepareBookActivity extends AppCompatActivity {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setType("text/plain");
         intent.setData(Uri.parse("mailto:"));
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"bogdanmorariu96@gmail.com"});
+        intent.putExtra(Intent.EXTRA_EMAIL, new String[]{"test@gmail.com"});
         intent.putExtra(Intent.EXTRA_SUBJECT, "Prepare a book");
-        intent.putExtra(Intent.EXTRA_TEXT, "KFC is love \n KFC is Life");
+        intent.putExtra(Intent.EXTRA_TEXT, "Hello,\nPlease keep " + bookEditText.getText() + " for "+ nameEditText.getText()+".\n"+"Thank you!");
         try {
-            startActivity(Intent.createChooser(intent, "Send mail...eu am scris asta"));
+            startActivity(Intent.createChooser(intent, "Send mail..."));
         }catch (android.content.ActivityNotFoundException ex){
             Toast.makeText(PrepareBookActivity.this, "There are no Email clients installed!", Toast.LENGTH_SHORT).show();
         }
