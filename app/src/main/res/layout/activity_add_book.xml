@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.alexandraneamtu.bookmanagement.MainActivity">
+    tools:context="com.example.alexandraneamtu.bookmanagement.AddBookActivity">
 
     <TextView
         android:id="@+id/textView"
@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="8dp"
-        android:text="Prepare a book"
+        android:text="Add new book"
         android:textSize="20dp"
         tools:layout_editor_absoluteX="41dp"
         tools:layout_editor_absoluteY="32dp" />
@@ -24,12 +24,19 @@
         android:hint="Enter Book title"
         android:layout_margin="8dp"
         android:textSize="14dp" />
-
     <EditText
-        android:id="@+id/name"
+        android:id="@+id/bookAuthor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your name"
+        android:hint="Enter Book author"
+        android:layout_margin="8dp"
+        android:textSize="14dp" />
+
+    <EditText
+        android:id="@+id/bookDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Book description"
         android:layout_margin="8dp"
         android:textSize="14dp" />
 
@@ -37,7 +44,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Submit"
-        android:onClick="prepareBook"/>
+        android:text="Add"
+        android:gravity="bottom|center"
+        android:onClick="addBook"/>
 
 </LinearLayout>

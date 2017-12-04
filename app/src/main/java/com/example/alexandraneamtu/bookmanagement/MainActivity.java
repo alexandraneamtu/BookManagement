@@ -5,24 +5,31 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import android.view.MotionEvent;
 import android.view.View;
 
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.alexandraneamtu.bookmanagement.model.Book;
 import com.example.alexandraneamtu.bookmanagement.repository.BookRepository;
 
+import java.util.List;
+
 
 public class MainActivity extends AppCompatActivity {
-    //public BookRepository getBookRepository() {
-        //return bookRepository;
-    //}
+
 
     private BookRepository bookRepository;// = new BookRepository(getApplicationContext());
 
-    private static BookListAdapter bookListAdapter;
+    private BookListAdapter bookListAdapter;
+
+    private List<Book> bookList;
+
+
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,15 +38,28 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        Button button = (Button) findViewById(R.id.prepareBook);
-        button.setOnClickListener((v)->{
+        Button prepareBookButton = (Button) findViewById(R.id.prepareBook);
+        prepareBookButton.setOnClickListener((v)->{
             Intent intent = new Intent(MainActivity.this,PrepareBookActivity.class);
             startActivity(intent);
         });
+
+        Button addBookButton = (Button) findViewById(R.id.addBook);
+        addBookButton.setOnClickListener((v)->{
+            Intent intent = new Intent(MainActivity.this,AddBookActivity.class);
+            startActivityForResult(intent,2);
+        });
+
+        //bookList = bookRepository.getBookList();
+
         bookListAdapter = new BookListAdapter(this,R.layout.list_item, bookRepository.getBookList());
-        ListView listView = (ListView) findViewById(R.id.listView);
+        listView= (ListView) findViewById(R.id.listView);
         listView.setAdapter(bookListAdapter);
         onBookSelected();
+        //ListView.setItemsCanFocus(true);
+
+
+
     }
 
 
@@ -49,7 +69,8 @@ public class MainActivity extends AppCompatActivity {
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("-----------"+Integer.toString(position));
+                //System.out.println("####################"+id+"##############"+position+"##############"+view.getTag());
+                //System.out.println("-----------"+Integer.toString(position));
                 Intent intent = new Intent(MainActivity.this,DetailsActivity.class);
                 intent.putExtra("id",bookRepository.findOne(position).getId());
                 intent.putExtra("title",bookRepository.findOne(position).getTitle());
@@ -64,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
         };
         listView.setOnItemClickListener(listener);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -83,13 +105,31 @@ public class MainActivity extends AppCompatActivity {
                 book.setImage(image);
                 System.out.println("New booooooooook"+book);
                 bookRepository.updateBook(book);
-                bookListAdapter.notifyDataSetChanged();
+                bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+            }
+        }
+        if(requestCode == 2){
+            if(resultCode == RESULT_OK){
+                System.out.println("######################################");
+                String title = data.getStringExtra("title");
+                String author = data.getStringExtra("author");
+                String description = data.getStringExtra("description");
+                bookRepository.insert(title,author,description);
+                bookListAdapter.updateReceiptsList(bookRepository.getBookList());
             }
         }
     }
 
-
-
-
-
+    public void deleteBook(View view) {
+        final int position = listView.getPositionForView((View) view.getParent());
+        System.out.println("deleteeeeee " + position);
+        Book book = new Book();
+        int id  = bookRepository.findOne(position).getId();
+        book.setId(id);
+        //String title = bookRepository.findOne(position).getTitle();
+        //String author = bookRepository.findOne(position).getAuthor();
+        //Str
+        bookRepository.delete(book);
+        bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+    }
 }

@@ -90,4 +90,10 @@ public class BookListAdapter extends ArrayAdapter<Book> {
         }
         return vi;
     }
+
+
+    public void updateReceiptsList(List<Book> newlist) {
+        books= newlist;
+        this.notifyDataSetChanged();
+    }
 }
