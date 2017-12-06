@@ -6,30 +6,103 @@
 
 import React, { Component } from 'react';
 import {
-  Platform,
-  StyleSheet,
-  Text,
-  View
+    AppRegistry,
+    FlatList,
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    ScrollView,
+    Image,
+    Alert,
+    TextInput,
+    Linking,
+    Button
 } from 'react-native';
-import { AppRegistry, Image } from 'react-native';
+import {StackNavigator} from 'react-navigation'
+import {BookList} from './BookList'
+import {PrepareBook} from './PrepareBook'
+import {Details} from './Details'
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' +
-    'Cmd+D or shake for dev menu',
-  android: 'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
+
+
+
+
+
+
+const NavigationApp = StackNavigator({
+    Home: {screen: BookList},
+    PrepareBook: {screen: PrepareBook},
+    Details: {screen: Details}
 });
 
-export default class App extends Component<{}> {
-  render() {
-    let pic = {
-      uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
-    };
-    return (
-      <Image source={pic} style={{width: 193, height: 110}}/>
-    );
-  }
-}
 
-// skip this line if using Create React Native App
-AppRegistry.registerComponent('AwesomeProject', () => Bananas);
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        //paddingTop: 22
+    },
+    header:{
+        backgroundColor: '#E91E63',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderBottomWidth: 10,
+        borderBottomColor: '#ddd',
+        //marginTop:-40,
+
+    },
+    item: {
+        padding: 10,
+        fontSize: 18,
+        height: 44,
+    },
+    headerText:{
+        color: 'white',
+        fontSize: 18,
+        padding: 26,
+    },
+    footer: {
+        position: 'absolute',
+        alignItems: 'center',
+        bottom: 0,
+        left: 0,
+        right: 0,
+    },
+    reserveButton: {
+        backgroundColor: '#E91E63',
+        //borderRadius: 30,
+        borderColor: '#ccc',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom:45
+    },
+    reserveButtonText: {
+        color:'#fff',
+        fontSize:24,
+    },
+    linearView: {
+        flexDirection:'row',
+        padding:8,
+    },
+    bookTitle:{
+        color:'#E91E63',
+        fontSize:25,
+        textAlign:'center',
+    },
+    detailedImage: {
+        height:220,
+        width: 200,
+        resizeMode: 'contain',
+        marginBottom:28,
+        marginTop:28
+    }
+
+
+});
+
+export default class App extends Component{
+    render(){
+        return <NavigationApp/>;
+    }
+}
