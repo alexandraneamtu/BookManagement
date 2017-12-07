@@ -89,7 +89,7 @@ public class BookRepository {
         book.setTitle(title);
         book.setAuthor(author);
         book.setDescription(description);
-        book.setImage(R.drawable.book_1984);
+        book.setImage(R.drawable.book_ex);
         System.out.println("###############################IN REPO##############"+book);
         db.bookDao().insert(book);
     }

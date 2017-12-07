@@ -1,8 +1,10 @@
 package com.example.alexandraneamtu.bookmanagement;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.view.MotionEvent;
@@ -15,7 +17,10 @@ import android.widget.Toast;
 
 import com.example.alexandraneamtu.bookmanagement.model.Book;
 import com.example.alexandraneamtu.bookmanagement.repository.BookRepository;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -37,6 +42,19 @@ public class MainActivity extends AppCompatActivity {
         bookRepository = new BookRepository(getApplicationContext());
 
         setContentView(R.layout.activity_main);
+
+        /*
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        entries.add(new BarEntry(4f, 0));
+        entries.add(new BarEntry(8f, 1));
+        entries.add(new BarEntry(6f, 2));
+        entries.add(new BarEntry(12f, 3));
+        entries.add(new BarEntry(18f, 4));
+        entries.add(new BarEntry(9f, 5));
+
+        BarDataSet dataset = new BarDataSet(entries, "# of Calls");
+
+        */
 
         Button prepareBookButton = (Button) findViewById(R.id.prepareBook);
         prepareBookButton.setOnClickListener((v)->{
@@ -122,14 +140,39 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteBook(View view) {
         final int position = listView.getPositionForView((View) view.getParent());
-        System.out.println("deleteeeeee " + position);
-        Book book = new Book();
-        int id  = bookRepository.findOne(position).getId();
-        book.setId(id);
-        //String title = bookRepository.findOne(position).getTitle();
-        //String author = bookRepository.findOne(position).getAuthor();
-        //Str
-        bookRepository.delete(book);
-        bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+        AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
+        builder1.setMessage("Are you sure you want to delete this book?");
+        builder1.setCancelable(true);
+
+        builder1.setPositiveButton(
+                "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                        System.out.println("deleteeeeee " + position);
+                        Book book = new Book();
+                        int idx  = bookRepository.findOne(position).getId();
+                        book.setId(idx);
+                        bookRepository.delete(book);
+                        bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+                    }
+                });
+
+        builder1.setNegativeButton(
+                "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert11 = builder1.create();
+        alert11.show();
+        //System.out.println("deleteeeeee " + position);
+        //Book book = new Book();
+        //int id  = bookRepository.findOne(position).getId();
+        //book.setId(id);
+        //bookRepository.delete(book);
+        //bookListAdapter.updateReceiptsList(bookRepository.getBookList());
     }
 }
