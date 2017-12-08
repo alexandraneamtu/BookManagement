@@ -84,8 +84,8 @@ export class BookList extends Component {
 
     }
 
-    findByTitle(name) {
-        let response = AsyncStorage.getItem('@MyStore:key');
+    async findByTitle(name) {
+        let response = await AsyncStorage.getItem('@MyStore:key');
         let books = JSON.parse(response);
         var count = books.length;
         for(var i = 0; i < count ; i++) {
@@ -119,6 +119,22 @@ export class BookList extends Component {
             //AsyncStorage.setItem('@MyStore:key',JSON.stringify(books));
             //console.log("Before retrieving content");
         this.getItems();
+
+    }
+
+    async deleteBook(idx){
+
+        let response = await AsyncStorage.getItem('@MyStore:key');
+        let books =  JSON.parse(response);
+        //console.log("book initial description:",books[idx].book.description);
+        //console.log("new description:",description);
+        console.log(books[idx].book);
+
+        books.splice(idx, 1);
+        //books[index].book.description = description;
+        //this.setState({newbooks: books});
+        console.log(books);
+        AsyncStorage.setItem('@MyStore:key', JSON.stringify(books));
 
     }
 
@@ -169,6 +185,16 @@ export class BookList extends Component {
                                                source={item.book.image}/>
                                         <Text style={styles.item} onPress={
                                             () => navigate('Details', {book: item.book, refresh: this._onRefresh})}>{item.book.title}</Text>
+                                        <View style={styles.deleteView}>
+                                            <TouchableOpacity style={styles.deleteButton} onPress={async() =>{
+                                                var idx = await this.findByTitle(item.book.title);
+                                                await this.deleteBook(idx);
+                                                this._onRefresh();
+                                                }
+                                                }>
+                                                <Text style={styles.reserveButtonText}> X </Text>
+                                            </TouchableOpacity>
+                                        </View>
                                     </View>
                                 </ScrollView>
                         }
@@ -191,7 +217,7 @@ export class BookList extends Component {
         else{
             return(
                 <View>
-                    <Text> dsdsadas </Text>
+                    <Text> Loading </Text>
                 </View>
             )
         }
@@ -242,6 +268,20 @@ const styles = StyleSheet.create({
         marginLeft:50,
         marginBottom:45,
         marginRight:7
+    },
+    deleteButton: {
+        backgroundColor: '#E91E63',
+        //alignSelf:'flex-end',
+        borderRadius: 30,
+        borderColor: '#ccc',
+        //alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft:50,
+        marginBottom:45,
+        marginRight:7
+    },
+    deleteView:{
+        flex: 1, flexDirection: 'row', justifyContent: 'flex-end'
     },
     addButton:{
         backgroundColor: '#E91E63',
