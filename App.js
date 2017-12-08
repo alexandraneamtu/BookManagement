@@ -23,6 +23,7 @@ import {StackNavigator} from 'react-navigation'
 import {BookList} from './BookList'
 import {PrepareBook} from './PrepareBook'
 import {Details} from './Details'
+import {AddBook} from './AddBook'
 
 
 
@@ -33,7 +34,8 @@ import {Details} from './Details'
 const NavigationApp = StackNavigator({
     Home: {screen: BookList},
     PrepareBook: {screen: PrepareBook},
-    Details: {screen: Details}
+    Details: {screen: Details},
+    AddBook: {screen: AddBook}
 });
 
 
