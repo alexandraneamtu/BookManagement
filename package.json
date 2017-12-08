@@ -14,7 +14,9 @@
     "react-native-mail": "^3.0.4",
     "react-native-popup-dialog": "^0.10.44",
     "react-native-sqlite-storage": "^3.3.3",
-    "react-navigation": "^1.0.0-beta.19"
+    "react-navigation": "^1.0.0-beta.19",
+    "react-native-datepicker-dialog": "latest",
+    "moment": "latest"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",
