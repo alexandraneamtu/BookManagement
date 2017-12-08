@@ -10,7 +10,9 @@ import {
     ScrollView,
     Image,
     RefreshControl,
-    AsyncStorage
+    AsyncStorage,
+    Alert,
+    Button
 } from 'react-native';
 import React, { Component } from 'react';
 
@@ -123,7 +125,6 @@ export class BookList extends Component {
     }
 
     async deleteBook(idx){
-
         let response = await AsyncStorage.getItem('@MyStore:key');
         let books =  JSON.parse(response);
         //console.log("book initial description:",books[idx].book.description);
@@ -135,6 +136,7 @@ export class BookList extends Component {
         //this.setState({newbooks: books});
         console.log(books);
         AsyncStorage.setItem('@MyStore:key', JSON.stringify(books));
+
 
     }
 
@@ -154,7 +156,23 @@ export class BookList extends Component {
         });
     }
 
-    render() {
+    showAlert(title){
+        Alert.alert('INFO','Are you sure you want to delete this item?',
+            [
+                {text: 'Yes',
+                    onPress: async () =>{
+                        var idx = await this.findByTitle(title);
+                        await this.deleteBook(idx);
+                        this._onRefresh();
+                    }},
+                {text: 'No',
+                    onPress: () => console.log("NOOO!!!!")}
+            ],
+            {cancelable: false}
+        )
+    }
+
+    render(){
         const {navigate} = this.props.navigation;
         //console.log("-----",this.state.newbooks);
         if(this.state.loading !== true) {
@@ -186,12 +204,8 @@ export class BookList extends Component {
                                         <Text style={styles.item} onPress={
                                             () => navigate('Details', {book: item.book, refresh: this._onRefresh})}>{item.book.title}</Text>
                                         <View style={styles.deleteView}>
-                                            <TouchableOpacity style={styles.deleteButton} onPress={async() =>{
-                                                var idx = await this.findByTitle(item.book.title);
-                                                await this.deleteBook(idx);
-                                                this._onRefresh();
-                                                }
-                                                }>
+                                            <TouchableOpacity style={styles.deleteButton}
+                                                    onPress={ () => this.showAlert(item.book.title)}>
                                                 <Text style={styles.reserveButtonText}> X </Text>
                                             </TouchableOpacity>
                                         </View>
