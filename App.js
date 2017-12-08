@@ -24,7 +24,7 @@ import {BookList} from './BookList'
 import {PrepareBook} from './PrepareBook'
 import {Details} from './Details'
 import {AddBook} from './AddBook'
-
+import {Chart} from './Chart'
 
 
 
@@ -35,7 +35,8 @@ const NavigationApp = StackNavigator({
     Home: {screen: BookList},
     PrepareBook: {screen: PrepareBook},
     Details: {screen: Details},
-    AddBook: {screen: AddBook}
+    AddBook: {screen: AddBook},
+    Chart: {screen: Chart}
 });
 
 

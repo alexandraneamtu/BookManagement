@@ -11,10 +11,13 @@ import {
     TextInput,
     Button,
     AsyncStorage,
-    TouchableOpacity
-} from 'react-native';
+    TouchableOpacity,
+    processColor,
 
-import { Pie } from 'react-native-pathjs-charts'
+} from 'react-native';
+import {StackNavigator, SafeAreaView} from 'react-navigation';
+
+
 
 
 export class Details extends Component{
@@ -22,6 +25,9 @@ export class Details extends Component{
         //title: 'Home',
         header:null,
     };
+
+
+
 
     async findByTitle(name) {
         let response = await AsyncStorage.getItem('@MyStore:key');
@@ -60,51 +66,15 @@ export class Details extends Component{
 
 
 
+
+
     render() {
+        const {navigate} = this.props.navigation;
         const {params} = this.props.navigation.state;
         const {goBack} = this.props.navigation;
         var book = params ? params.book : "<undefined>";
 
-        let data = [{
-            "name": "Washington",
-            "population": 7694980
-        }, {
-            "name": "Oregon",
-            "population": 2584160
-        }, {
-            "name": "Minnesota",
-            "population": 6590667,
-            "color": {'r':223,'g':154,'b':20}
-        }, {
-            "name": "Alaska",
-            "population": 7284698
-        }]
 
-        let options = {
-            margin: {
-                top: 20,
-                left: 20,
-                right: 20,
-                bottom: 20
-            },
-            width: 350,
-            height: 350,
-            color: '#2980B9',
-            r: 50,
-            R: 150,
-            legendPosition: 'topLeft',
-            animate: {
-                type: 'oneByOne',
-                duration: 200,
-                fillTransition: 3
-            },
-            label: {
-                fontFamily: 'Arial',
-                fontSize: 8,
-                fontWeight: true,
-                color: '#ECF0F1'
-            }
-        }
 
         return (
             <View>
@@ -117,7 +87,7 @@ export class Details extends Component{
                         <TextInput style = {{width:150,textAlign:'center'}} onChangeText={(text) => this.setState({newAuthor: text})}> {book.author} </TextInput>
                         <Image style={styles.detailedImage} source={book.image}/>
                         <ScrollView>
-                            <TextInput style={{height:260, width: 350, marginTop:10 }} multiline={true} onChangeText={(text) => this.setState({newDescription: text})}> {book.description} </TextInput>
+                            <TextInput style={{height:160, width: 350, marginTop:10 }} multiline={true} onChangeText={(text) => this.setState({newDescription: text})}> {book.description} </TextInput>
                         </ScrollView>
                     </View>
                 </ScrollView>
@@ -137,11 +107,10 @@ export class Details extends Component{
                 }>
                         <Text style={styles.reserveButtonText}>Save changes </Text>
                     </TouchableOpacity>
-                </View>
-                <View style={styles.container}>
-                    <Pie data={data}
-                         options={options}
-                         accessorKey="population"/>
+                    <TouchableOpacity style={styles.reserveButton} onPress={() =>
+                        navigate('Chart')}>
+                        <Text style={styles.reserveButtonText}> Chart </Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         );
