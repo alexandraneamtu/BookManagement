@@ -26,9 +26,6 @@ export class Details extends Component{
         header:null,
     };
 
-
-
-
     async findByTitle(name) {
         let response = await AsyncStorage.getItem('@MyStore:key');
         console.log("findByTitle-details!!");
@@ -108,7 +105,7 @@ export class Details extends Component{
                         <Text style={styles.reserveButtonText}>Save changes </Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.reserveButton} onPress={() =>
-                        navigate('Chart')}>
+                        navigate('Chart',{title:book.title})}>
                         <Text style={styles.reserveButtonText}> Chart </Text>
                     </TouchableOpacity>
                 </View>

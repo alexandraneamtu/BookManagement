@@ -20,29 +20,15 @@ export class Chart extends React.Component {
         super();
 
         this.state = {
+            capitalLetters: 0,
+            lowercaseLetters: 0,
+            spaces: 0,
             legend: {
                 enabled: true,
                 textSize: 8,
                 form: 'CIRCLE',
                 position: 'RIGHT_OF_CHART',
                 wordWrapEnabled: true
-            },
-            data: {
-                dataSets: [{
-                    values: [{value: 40, label: 'Sandwiches'},
-                        {value: 21, label: 'Salads'},
-                        {value: 15, label: 'Soup'},
-                        {value: 9, label: 'Beverages'},
-                        {value: 15, label: 'Desserts'}],
-                    label: 'Pie dataset',
-                    config: {
-                        colors: [processColor('#C0FF8C'), processColor('#FFF78C'), processColor('#FFD08C'), processColor('#8CEAFF'), processColor('#FF8C9D')],
-                        valueTextSize: 20,
-                        valueTextColor: processColor('green'),
-                        sliceSpace: 5,
-                        selectionShift: 13
-                    }
-                }],
             },
             description: {
                 text: 'Pie chart description',
@@ -53,30 +39,44 @@ export class Chart extends React.Component {
         };
     }
 
-    handleSelect(event) {
-        let entry = event.nativeEvent
-        if (entry == null) {
-            this.setState({...this.state, selectedEntry: null})
-        } else {
-            this.setState({...this.state, selectedEntry: JSON.stringify(entry)})
+
+    analise(title) {
+        for (i = 0; i < title.length; i++) {
+            if (title[i] === title[i].toUpperCase())
+                this.state.capitalLetters++;
+            if (title[i] === title[i].toLowerCase())
+                this.state.lowercaseLetters++;
+            if (title[i] === " ")
+                this.state.spaces++;
         }
     }
 
     render() {
+        const {params} = this.props.navigation.state;
+        var title = params ? params.title : "<undefined>";
+        this.analise(title);
         return (
             <SafeAreaView style={{flex: 1}}>
-                <View>
-                    <Text>selected:</Text>
-                    <Text> {this.state.selectedEntry}</Text>
-                </View>
-
                 <View style={styles.container}>
                     <PieChart
                         style={styles.chart}
                         logEnabled={true}
-                        chartBackgroundColor={processColor('pink')}
                         chartDescription={this.state.description}
-                        data={this.state.data}
+                        data={{
+                            dataSets: [{
+                            values: [
+                                {value: this.state.capitalLetters, label: 'UpperCaseLetters'},
+                                {value: this.state.lowercaseLetters, label: 'LowerCaseLetters'},
+                                {value: this.state.spaces, label: 'spaces'}],
+                            label: 'Legend',
+                            config: {
+                            colors: [processColor('#C0FF8C'), processColor('#FFF78C'), processColor('#FFD08C')],
+                            valueTextSize: 20,
+                            valueTextColor: processColor('green'),
+                            sliceSpace: 5,
+                            selectionShift: 13
+                        }
+                        }]}}
                         legend={this.state.legend}
 
                         entryLabelColor={processColor('black')}
@@ -86,15 +86,13 @@ export class Chart extends React.Component {
                         rotationEnabled={true}
                         rotationAngle={45}
                         drawSliceText={true}
-                        usePercentValues={false}
-                        styledCenterText={{text:'Pie center text!', color: processColor('pink'), size: 20}}
+                        usePercentValues={true}
                         centerTextRadiusPercent={100}
                         holeRadius={40}
                         holeColor={processColor('#f0f0f0')}
                         transparentCircleRadius={45}
                         transparentCircleColor={processColor('#f0f0f088')}
-                        maxAngle={350}
-                        onSelect={this.handleSelect.bind(this)}
+                        maxAngle={360}
                     />
                 </View>
 
