@@ -1,29 +1,27 @@
 package com.example.alexandraneamtu.bookmanagement.model;
 
-import android.arch.persistence.room.ColumnInfo;
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.provider.BaseColumns;
+
+import com.google.firebase.database.IgnoreExtraProperties;
 
 /**
  * Created by alexandraneamtu on 29/10/2017.
  */
 
-@Entity(tableName = Book.TABLE_NAME)
+@IgnoreExtraProperties
 public class Book {
 
-    public static final String TABLE_NAME = "book";
+    //public static final String TABLE_NAME = "book";
 
-    @PrimaryKey(autoGenerate = true)
+    //@PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name = "title")
+    //@ColumnInfo(name = "title")
     private String title;
-    @ColumnInfo(name = "author")
+    //@ColumnInfo(name = "author")
     private String author;
-    @ColumnInfo(name = "description")
+    //@ColumnInfo(name = "description")
     private String description;
-    @ColumnInfo(name = "image")
+    //@ColumnInfo(name = "image")
     private Integer image;
 
 
@@ -82,7 +80,8 @@ public class Book {
     @Override
     public String toString() {
         return "Book{" +
-                "title='" + title + '\'' +
+                "id=" + id +
+                ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", description='" + description + '\'' +
                 ", image=" + image +

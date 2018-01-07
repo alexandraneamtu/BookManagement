@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -17,8 +18,16 @@ import android.widget.Toast;
 
 import com.example.alexandraneamtu.bookmanagement.model.Book;
 import com.example.alexandraneamtu.bookmanagement.repository.BookRepository;
+import com.example.alexandraneamtu.bookmanagement.utils.Utils;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +40,15 @@ public class MainActivity extends AppCompatActivity {
 
     private BookListAdapter bookListAdapter;
 
-    private List<Book> bookList;
+    private DatabaseReference bDatabase;
+
+    private DatabaseReference uDatabase;
+
+    private FirebaseDatabase db;
+
+    private String role;
+
+    //private List<Book> bookList;
 
 
     ListView listView;
@@ -39,7 +56,51 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bookRepository = new BookRepository(getApplicationContext());
+
+        db = Utils.getDatabase();
+        bDatabase = db.getReference().child("books");
+        bDatabase.keepSynced(true);
+        uDatabase = db.getReference().child("users");
+
+        bookRepository = new BookRepository(bDatabase);
+
+
+        uDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                role = dataSnapshot.getValue(String.class);
+                System.out.println("#########################"+role);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+
+        bDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.i("Count ",""+ dataSnapshot.getChildrenCount());
+                if(dataSnapshot.getChildrenCount()>0) {
+                    bookRepository.clear();
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        Book book = postSnapshot.getValue(Book.class);
+                        bookRepository.addBook(book);
+                        Log.i("Get Data", book.toString());
+                    }
+                    bookRepository.setId(bookRepository.getBookList().get(bookRepository.getBookList().size() - 1).getId() + 1);
+                    bookListAdapter.updateBooksList(bookRepository.getBookList());
+                }
+                else{
+                    bookRepository.setId(1);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                System.out.println("The read failed: " + databaseError.getCode());
+            }
+        });
 
         setContentView(R.layout.activity_main);
 
@@ -58,14 +119,39 @@ public class MainActivity extends AppCompatActivity {
 
         Button prepareBookButton = (Button) findViewById(R.id.prepareBook);
         prepareBookButton.setOnClickListener((v)->{
-            Intent intent = new Intent(MainActivity.this,PrepareBookActivity.class);
-            startActivity(intent);
+            if (role.equals("admin")){
+                Toast.makeText(this, "Unavailable in admin mode!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (role.equals("user")) {
+                Intent intent = new Intent(MainActivity.this, PrepareBookActivity.class);
+                startActivity(intent);
+            }
         });
 
         Button addBookButton = (Button) findViewById(R.id.addBook);
         addBookButton.setOnClickListener((v)->{
-            Intent intent = new Intent(MainActivity.this,AddBookActivity.class);
-            startActivityForResult(intent,2);
+            if (role.equals("user")){
+                Toast.makeText(this, "Only admins can add new books!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (role.equals("admin")) {
+                Intent intent = new Intent(MainActivity.this, AddBookActivity.class);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        Button signOutButton = (Button) findViewById(R.id.signOutButton);
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                    Intent i = new Intent(MainActivity.this, LoginActivity.class);
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+                }
+            }
         });
 
         //bookList = bookRepository.getBookList();
@@ -108,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode,data);
-        if(requestCode == 1){
+        if(requestCode == 1)                                                                                                                               {
             if (resultCode == RESULT_OK){
                 String title = data.getStringExtra("title2");
                 String author = data.getStringExtra("author2");
@@ -123,7 +209,7 @@ public class MainActivity extends AppCompatActivity {
                 book.setImage(image);
                 System.out.println("New booooooooook"+book);
                 bookRepository.updateBook(book);
-                bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+                bookListAdapter.updateBooksList(bookRepository.getBookList());
             }
         }
         if(requestCode == 2){
@@ -133,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
                 String author = data.getStringExtra("author");
                 String description = data.getStringExtra("description");
                 bookRepository.insert(title,author,description);
-                bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+                bookListAdapter.updateBooksList(bookRepository.getBookList());
             }
         }
     }
@@ -154,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
                         int idx  = bookRepository.findOne(position).getId();
                         book.setId(idx);
                         bookRepository.delete(book);
-                        bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+                        bookListAdapter.updateBooksList(bookRepository.getBookList());
                     }
                 });
 
@@ -167,7 +253,13 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         AlertDialog alert11 = builder1.create();
-        alert11.show();
+        if (role.equals("user")){
+            Toast.makeText(this, "Only admins cand delete books!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (role.equals("admin")) {
+            alert11.show();
+        }
         //System.out.println("deleteeeeee " + position);
         //Book book = new Book();
         //int id  = bookRepository.findOne(position).getId();

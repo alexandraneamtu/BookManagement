@@ -1,15 +1,11 @@
 package com.example.alexandraneamtu.bookmanagement.db;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.RoomDatabase;
-
-import com.example.alexandraneamtu.bookmanagement.model.Book;
-import com.example.alexandraneamtu.bookmanagement.model.BookDao;
 
 /**
  * Created by alexandraneamtu on 01/12/2017.
  */
 
+/*
 @Database(entities = {Book.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
@@ -62,5 +58,7 @@ public abstract class AppDatabase extends RoomDatabase {
         INSTANCE = null;
     }
 
-    */
+
 }
+
+*/

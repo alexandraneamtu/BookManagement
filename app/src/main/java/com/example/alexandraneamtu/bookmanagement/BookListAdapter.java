@@ -92,8 +92,9 @@ public class BookListAdapter extends ArrayAdapter<Book> {
     }
 
 
-    public void updateReceiptsList(List<Book> newlist) {
-        books= newlist;
+    public void updateBooksList(List<Book> newlist) {
+        books = newlist;
+
         this.notifyDataSetChanged();
     }
 }

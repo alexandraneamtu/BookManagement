@@ -1,5 +1,6 @@
 package com.example.alexandraneamtu.bookmanagement.model;
 
+import java.util.List;/*
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -13,6 +14,7 @@ import java.util.List;
  * Created by alexandraneamtu on 01/12/2017.
  */
 
+/*
 @Dao
 public interface BookDao {
     @Query("SELECT * FROM book")
@@ -40,3 +42,4 @@ public interface BookDao {
 
 
 }
+*/
