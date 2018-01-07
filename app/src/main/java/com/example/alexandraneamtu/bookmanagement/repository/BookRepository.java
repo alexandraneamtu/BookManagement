@@ -2,12 +2,15 @@ package com.example.alexandraneamtu.bookmanagement.repository;
 
 import android.content.Context;
 
+import com.example.alexandraneamtu.bookmanagement.MainActivity;
 import com.example.alexandraneamtu.bookmanagement.R;
 import com.example.alexandraneamtu.bookmanagement.model.Book;
+import com.example.alexandraneamtu.bookmanagement.utils.Observer;
 import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
 import static android.media.CamcorderProfile.get;
 
@@ -15,9 +18,10 @@ import static android.media.CamcorderProfile.get;
  * Created by alexandraneamtu on 29/10/2017.
  */
 
-public class BookRepository {
+public class BookRepository extends Observer{
 
     private int id=1;
+    private List<Observer> observers = new ArrayList<Observer>();
     private List<Book> bookList = new ArrayList<Book>();
     //private final AppDatabase db;
 
@@ -71,21 +75,6 @@ public class BookRepository {
         book5.setImage(R.drawable.the_great_gatsby);
         book5.setId(id);
 
-        //id++;
-
-//        db = Room.
-//                databaseBuilder(context, AppDatabase.class, "bookManagement-database")
-//                // allow queries on the main thread.
-//                // Don't do this on a real app! See PersistenceBasicSample for an example.
-//                .allowMainThreadQueries()
-//                .build();
-
-        //db.bookDao().deleteAll();
-        //db.bookDao().insert(book1);
-        //db.bookDao().insert(book2);
-        //db.bookDao().insert(book3);
-        //db.bookDao().insert(book4);
-        //db.bookDao().insert(book5);
 
         this.db = db;
 
@@ -97,11 +86,14 @@ public class BookRepository {
 
         //db2.child("users").child("PGBKVWlQ1eTYWhOLEUO0Me7ZuyK2").setValue("user");
         //db2.child("users").child("npbPDicEkRd0TcwiwAzuEkbL2YD3").setValue("admin");
+
+        this.attach(this);
     }
 
     public void addBook(Book book){
         //this.bookList.clear();
         this.bookList.add(book);
+        //notifyAllObservers();
     }
 
     public void clear(){
@@ -127,6 +119,7 @@ public class BookRepository {
         System.out.println("###############################IN REPO##############"+book);
         db.child(String.valueOf(book.getId())).setValue(book);
 //        db.bookDao().insert(book);
+        notifyAllObservers();
     }
 
     public List<Book> getBookList() {
@@ -137,10 +130,28 @@ public class BookRepository {
 
     public void updateBook(Book book){
         db.child(String.valueOf(book.getId())).setValue(book);
+        notifyAllObservers();
     }
 
     public void delete(Book book){
 //        db.bookDao().delete(book);
         db.child(String.valueOf(book.getId())).removeValue();
+        notifyAllObservers();
+    }
+
+
+    public void attach(Observer observer){
+                observers.add(observer);
+    }
+
+    public void notifyAllObservers(){
+        for (Observer observer : observers) {
+            observer.update();
+        }
+    }
+
+    @Override
+    public void update() {
+        MainActivity.showRepositoryUpdated();
     }
 }

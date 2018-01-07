@@ -1,6 +1,7 @@
 package com.example.alexandraneamtu.bookmanagement;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -48,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private String role;
 
+    private static Context context;
+
     //private List<Book> bookList;
 
 
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         bookRepository = new BookRepository(bDatabase);
 
-
+        context = getApplicationContext();
         uDatabase.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -266,5 +269,9 @@ public class MainActivity extends AppCompatActivity {
         //book.setId(id);
         //bookRepository.delete(book);
         //bookListAdapter.updateReceiptsList(bookRepository.getBookList());
+    }
+
+    public static void showRepositoryUpdated() {
+        Toast.makeText(context, "Repository updated!", Toast.LENGTH_SHORT).show();
     }
 }
