@@ -1,10 +1,12 @@
 package com.example.alexandraneamtu.bookmanagement;
 
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
@@ -213,6 +215,15 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("New booooooooook"+book);
                 bookRepository.updateBook(book);
                 bookListAdapter.updateBooksList(bookRepository.getBookList());
+                NotificationCompat.Builder mBuilder =
+                        new NotificationCompat.Builder(this)
+                                .setSmallIcon(R.drawable.book_ex)
+                                .setContentTitle("BookManager")
+                                .setContentText( "Book '" + title + "' has been modified!" );
+                int mNotificationId = 001;
+                NotificationManager mNotifyMgr =
+                        (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                mNotifyMgr.notify(mNotificationId, mBuilder.build());
             }
         }
         if(requestCode == 2){
@@ -223,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
                 String description = data.getStringExtra("description");
                 bookRepository.insert(title,author,description);
                 bookListAdapter.updateBooksList(bookRepository.getBookList());
+
             }
         }
     }
