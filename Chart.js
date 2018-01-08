@@ -82,7 +82,6 @@ export class Chart extends React.Component {
                         entryLabelColor={processColor('black')}
                         entryLabelTextSize={20}
 
-
                         rotationEnabled={true}
                         rotationAngle={45}
                         drawSliceText={true}

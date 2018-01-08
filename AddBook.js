@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import React, { Component } from 'react';
 import {Book} from './Books'
+import {firebaseApp} from './BookList'
 
 export class AddBook extends Component{
 
@@ -22,28 +23,19 @@ export class AddBook extends Component{
         header:null,
     };
 
+
     print(){
         console.log(this.state.newTitle);
         console.log(this.state.newAuthor);
         console.log(this.state.newDescription);
     }
 
-    async save()
+    save()
     {
-        let response = await AsyncStorage.getItem('@MyStore:key');
-        let books =  JSON.parse(response);
-        console.log("size:",books.length);
-        console.log("book initial description:",books[books.length-1].key);
-        //book = new Book(this.state.newTitle,this.state.newAuthor,this.state.newDescription,require('./img/book_1984.jpg'));
-        //console.log("Save"+book);
-        var count = books.length;
-        books.push({key:books[count-1].key+1,book :new Book(this.state.newTitle,this.state.newAuthor,this.state.newDescription,require('./img/book_ex.png'))});
-        console.log("new books"+books);
-        //var count = books.length;
-        //for(var i = 0; i < count ; i++) {
-            //console.log(books[i].book)
-        //}
-        AsyncStorage.setItem('@MyStore:key', JSON.stringify(books));
+        console.log("----------------------");
+        console.log(items.book);
+        items.push({book :new Book(this.state.newTitle,this.state.newAuthor,this.state.newDescription,require('./img/book_ex.png'))});
+
     }
 
     render(){
@@ -67,24 +59,13 @@ export class AddBook extends Component{
                 <View>
                     <TouchableOpacity style={styles.reserveButton}
                                       onPress={
-                                          async () =>{
-                                              await this.save();
+                                          () =>{
+                                              this.save();
                                               params.refresh();
                                               goBack();
                                           }
                                       }
-                        //async () => {
-                            //var id = await this.findByTitle(params.book.title);
-                            //if (this.state.newDescription) {
-                                //await this.updateBookDescription(id, this.state.newDescription);
-                            //}
-                            //if (this.state.newAuthor) {
-                                //await this.updateBookAuthor(id, this.state.newAuthor);
-                            //}
-                            //params.refresh();
-                            //goBack();
-                        //}
-                    //}
+
                     >
                         <Text style={styles.reserveButtonText}>Save</Text>
                     </TouchableOpacity>

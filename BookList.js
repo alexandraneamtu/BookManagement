@@ -16,11 +16,26 @@ import {
 } from 'react-native';
 import React, { Component } from 'react';
 
+
 import {Book} from './Books'
 //import SQLite from 'react-native-sqlite-storage';
 
+const firebase = require('firebase');
+
+
+const firebaseConfig = {
+    apiKey: "AIzaSyANN0hiHwZd-KJC7oqSsMlXsa8Mgwq6vJI",
+    authDomain: "awesomeproject-fdd85.firebaseapp.com",
+    databaseURL: "https://awesomeproject-fdd85.firebaseio.com",
+    projectId: "awesomeproject-fdd85",
+    storageBucket: "",
+    persistence:true
+};
+export const firebaseApp = firebase.initializeApp(firebaseConfig);
+
+
 var books=[
-    {key:1,book:
+    {book:
        new Book(
         'Gone with the wind',
         'Suzanne Collins',
@@ -28,13 +43,14 @@ var books=[
         "\n" +
         "When 16-year-old Katniss's young sister, Prim, is selected as District 12's female representative, Katniss volunteers to take her place. She and her male counterpart Peeta, are pitted against bigger, stronger representatives, some of whom have trained for this their whole lives. , she sees it as a death sentence. But Katniss has been close to death before. For her, survival is second nature.",
            require('./img/book_ex.png'))},
-    {key:2,book:
+    {book:
         new Book(
         'Pride and Prejudice',
         'Jane Austen',
         'It is a truth universally acknowledged, that a single man in possession of a good fortune must be in want of a wife.” So begins Pride and Prejudice, Jane Austen’s witty comedy of manners—one of the most popular novels of all time—that features splendidly civilized sparring between the proud Mr. Darcy and the prejudiced Elizabeth Bennet as they play out their spirited courtship in a series of eighteenth-century drawing-room intrigues. Renowned literary critic and historian George Saintsbury in 1894 declared it the “most perfect, the most characteristic, the most eminently quintessential of its author’s works,” and Eudora Welty in the twentieth century described it as “irresistible and as nearly flawless as any fiction could be.',
         require('./img/book_ex.png'))},
-    {key:3,book:new Book(
+    {book:
+        new Book(
         'The Hunger Games',
         'Margaret Mitchell',
         "Gone with the Wind is a novel written by Margaret Mitchell, first published in 1936. The story is set in Clayton County, Georgia, and Atlanta during the American Civil War and Reconstruction era. It depicts the struggles of young Scarlett O'Hara, the spoiled daughter of a well-to-do plantation owner, who must use every means at her disposal to claw her way out of the poverty she finds herself in after Sherman's March to the Sea. A historical novel, the story is a Bildungsroman or coming-of-age story, with the title taken from a poem written by Ernest Dowson." +
@@ -81,21 +97,16 @@ export class BookList extends Component {
             loading: true,
         };
         console.log("dsadasdasdas");
-
-
+        this.items = this.getRef().child('books');
+        //this.items.push(books[0]);
+        //this.items.push(books[1]);
+        //this.items.push(books[2]);
 
     }
 
-    async findByTitle(name) {
-        let response = await AsyncStorage.getItem('@MyStore:key');
-        let books = JSON.parse(response);
-        var count = books.length;
-        for(var i = 0; i < count ; i++) {
-            if(books[i].book.title === name) {
-                return i;
-            }
-        }
-        return -1;
+    getRef() {
+        return firebaseApp.database().ref();
+
     }
 
 
@@ -103,66 +114,46 @@ export class BookList extends Component {
      _onRefresh() {
         this.setState({refreshing:true});
         this.setState({refreshing:false});
-        this.retrieveContent();
+        this.getItems(this.items);
     }
 
-    retrieveContent() {
-        AsyncStorage.getItem('@MyStore:key').then((value) => {
-            // We have data!!
-            this.setState({newbooks: JSON.parse(value)});
-            console.log("NEW:",this.state.newbooks);
-        }).catch((error) => {
-            console.log("Unable to retrieve the content" + error);
-        });
-    }
 
     componentWillMount(){
-            //console.log("ewqeeqeq");
-            //AsyncStorage.setItem('@MyStore:key',JSON.stringify(books));
-            //console.log("Before retrieving content");
-        this.getItems();
+        this.getItems(this.items);
 
     }
 
-    async deleteBook(idx){
-        let response = await AsyncStorage.getItem('@MyStore:key');
-        let books =  JSON.parse(response);
-        //console.log("book initial description:",books[idx].book.description);
-        //console.log("new description:",description);
-        console.log(books[idx].book);
-
-        books.splice(idx, 1);
-        //books[index].book.description = description;
-        //this.setState({newbooks: books});
-        console.log(books);
-        AsyncStorage.setItem('@MyStore:key', JSON.stringify(books));
-
-
+    deleteBook(key){
+        this.items.child(key).remove();
     }
 
-     getItems(){
-        AsyncStorage.getItem('@MyStore:key').then((value) => {
-            // We have data!!
+     getItems(items){
+         items.on('value', (snap) => {
 
-            this.setState({newbooks: JSON.parse(value)});
-            console.log("Retrieved from storage:" + this.state.newbooks);
-            var count = this.state.newbooks.length;
-            for(var i = 0; i < count ; i++) {
-                console.log(this.state.newbooks[i].book.image);
-            }
-            this.setState({loading: false});
-        }).catch((error) => {
-            console.log("Unable to retrieve the content" + error);
-        });
+             // get children as an array
+             var items = [];
+             snap.forEach((child) => {
+                 items.push({
+                     book: child.val().book,
+                     key: child.key
+                 });
+             });
+             //console.log("saywhaaaaa");
+             console.log(items);
+             this.setState({
+                 newbooks: items
+             });
+             this.setState({loading: false});
+
+         });
     }
 
-    showAlert(title){
+    showAlert(title,key){
         Alert.alert('INFO','Are you sure you want to delete this item?',
             [
                 {text: 'Yes',
-                    onPress: async () =>{
-                        var idx = await this.findByTitle(title);
-                        await this.deleteBook(idx);
+                    onPress: () =>{
+                        this.deleteBook(key);
                         this._onRefresh();
                     }},
                 {text: 'No',
@@ -202,10 +193,11 @@ export class BookList extends Component {
                                         <Image style={{height: 70, width: 50, resizeMode: 'contain'}}
                                                source={item.book.image}/>
                                         <Text style={styles.item} onPress={
-                                            () => navigate('Details', {book: item.book, refresh: this._onRefresh})}>{item.book.title}</Text>
+                                            () => navigate('Details', {book: item.book, key:item.key, refresh: this._onRefresh})}>{item.book.title}</Text>
                                         <View style={styles.deleteView}>
                                             <TouchableOpacity style={styles.deleteButton}
-                                                    onPress={ () => this.showAlert(item.book.title)}>
+                                                    onPress={ () => { this.showAlert(item.book.title,item.key);
+                                                    console.log("########", item.key)}}>
                                                 <Text style={styles.reserveButtonText}> X </Text>
                                             </TouchableOpacity>
                                         </View>
@@ -231,6 +223,9 @@ export class BookList extends Component {
         else{
             return(
                 <View>
+                    <View style={styles.header}>
+                        <Text style={styles.headerText}>- List of Books -</Text>
+                    </View>
                     <Text> Loading </Text>
                 </View>
             )

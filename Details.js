@@ -16,7 +16,7 @@ import {
 
 } from 'react-native';
 import {StackNavigator, SafeAreaView} from 'react-navigation';
-
+import {firebaseApp} from './BookList'
 
 
 
@@ -26,38 +26,21 @@ export class Details extends Component{
         header:null,
     };
 
-    async findByTitle(name) {
-        let response = await AsyncStorage.getItem('@MyStore:key');
-        console.log("findByTitle-details!!");
-        let books = JSON.parse(response);
-        var count = books.length;
-        for(var i = 0; i < count ; i++) {
-            if(books[i].book.title === name) {
-                return i;
-            }
-        }
-        return -1;
+
+
+
+     updateBookDescription(index,description) {
+        const items = firebaseApp.database().ref().child('books');
+
+        console.log("keeeeeeeeeeeeeeyyyyyyyyyy",index);
+        items.child(index).child("book").child("description").set(description);
     }
 
-    async updateBookDescription(index,description) {
-        let response = await AsyncStorage.getItem('@MyStore:key');
-        let books =  JSON.parse(response);
-        console.log("book initial description:",books[index].book.description);
-        console.log("new description:",description);
-        books[index].book.description = description;
-        //this.setState({newbooks: books});
-        AsyncStorage.setItem('@MyStore:key', JSON.stringify(books));
-    }
+     updateBookAuthor(index,author) {
+         const items = firebaseApp.database().ref().child('books');
 
-     async updateBookAuthor(index,author) {
-        let response = await  AsyncStorage.getItem('@MyStore:key');
-        let books =  JSON.parse(response);
-         console.log("book initial description:",books[index].book.author);
-         console.log("new description:",author);
-        books[index].book.author = author;
-        //console.log("books:",books);
-        //this.setState({newbooks: books});
-        AsyncStorage.setItem('@MyStore:key', JSON.stringify(books));
+         console.log("keeeeeeeeeyyyyyyyyyyyyy:",index);
+         items.child(index).child("book").child("author").set(author);
     }
 
 
@@ -70,7 +53,7 @@ export class Details extends Component{
         const {params} = this.props.navigation.state;
         const {goBack} = this.props.navigation;
         var book = params ? params.book : "<undefined>";
-
+        var key = params ? params.key : "<undefined>"
 
 
         return (
@@ -90,13 +73,13 @@ export class Details extends Component{
                 </ScrollView>
                 <View>
                     <TouchableOpacity style={styles.reserveButton} onPress={
-                    async () => {
-                        var id = await this.findByTitle(params.book.title);
+                     () => {
+                         console.log("###########SADSADASDASDASDA###################");
                         if (this.state.newDescription) {
-                            await this.updateBookDescription(id, this.state.newDescription);
+                             this.updateBookDescription(key, this.state.newDescription);
                         }
                         if (this.state.newAuthor) {
-                            await this.updateBookAuthor(id, this.state.newAuthor);
+                                this.updateBookAuthor(key, this.state.newAuthor);
                         }
                         params.refresh();
                         goBack();
