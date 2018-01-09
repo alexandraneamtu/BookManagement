@@ -12,7 +12,7 @@ import {
     RefreshControl,
     AsyncStorage,
     Alert,
-    Button
+    Button, ActivityIndicator
 } from 'react-native';
 import React, { Component } from 'react';
 
@@ -95,12 +95,18 @@ export class BookList extends Component {
             refreshing: false,
             newbooks: [],
             loading: true,
+            //username: ""
         };
         console.log("dsadasdasdas");
         this.items = this.getRef().child('books');
+        this.currentuser = firebase.auth().currentUser.uid;
+        console.log("-------------" + this.currentuser);
+        //his.username = "";
         //this.items.push(books[0]);
         //this.items.push(books[1]);
         //this.items.push(books[2]);
+        //this.dosmt = this.dosmt.bind(this);
+
 
     }
 
@@ -148,19 +154,43 @@ export class BookList extends Component {
          });
     }
 
+    delete(key,username){
+        if(username === "admin")
+        {
+            Alert.alert('INFO','Are you sure you want to delete this item?',
+                [
+                    {text: 'Yes',
+                        onPress: () => {
+                            this.items.child(key).remove();
+                            this._onRefresh();
+                        }},
+                    {text: 'No',
+                        onPress: () => console.log("NOOO!!!!")}
+                ],
+                {cancelable: false}
+            )}
+
+        if(username === "user")
+        {
+            console.log(username);
+            Alert.alert('','Only admins can delete books',
+                [
+                    {text: 'OK',
+                        onPress: () => console.log("NOOO!!!!")}
+                ],
+                {cancelable: false}
+            )
+        }
+    }
+
     showAlert(title,key){
-        Alert.alert('INFO','Are you sure you want to delete this item?',
-            [
-                {text: 'Yes',
-                    onPress: () =>{
-                        this.deleteBook(key);
-                        this._onRefresh();
-                    }},
-                {text: 'No',
-                    onPress: () => console.log("NOOO!!!!")}
-            ],
-            {cancelable: false}
-        )
+        this.getRef().child("users").child(this.currentuser).once('value').then( snapshot =>{
+            var username = (snapshot.val());
+            console.log("-----------" + username);
+            this.delete(key,username);
+
+        });
+
     }
 
     render(){
@@ -207,13 +237,64 @@ export class BookList extends Component {
                         extraData = {this.state.newbooks}
                     />
                     <View style={styles.footer}>
-                        <TouchableOpacity style={styles.reserveButton} onPress={() =>
-                            navigate('PrepareBook')}>
+                        <TouchableOpacity style={styles.reserveButton} onPress={() => {
+                            this.getRef().child("users").child(this.currentuser).once('value').then(snapshot => {
+                                var username = (snapshot.val());
+                                console.log("-----------" + username);
+                                if (username === "user") {
+                                    navigate('AddBook', {refresh: this._onRefresh})
+                                }
+
+                                if (username === "admin") {
+                                    console.log(username);
+                                    Alert.alert('', 'Unavailable in admin mode!',
+                                        [
+                                            {
+                                                text: 'OK',
+                                                onPress: () => console.log("NOOO!!!!")
+                                            }
+                                        ],
+                                        {cancelable: false}
+                                    )
+                                }
+                            });
+
+                        }
+                        }>
                             <Text style={styles.reserveButtonText}> Prepare a book </Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.addButton} onPress={() =>
-                            navigate('AddBook',{refresh: this._onRefresh})}>
+                        <TouchableOpacity style={styles.addButton} onPress={() => {
+                            this.getRef().child("users").child(this.currentuser).once('value').then(snapshot => {
+                                var username = (snapshot.val());
+                                console.log("-----------" + username);
+                                if (username === "admin") {
+                                    navigate('AddBook', {refresh: this._onRefresh})
+                                }
+
+                                if (username === "user") {
+                                    console.log(username);
+                                    Alert.alert('', 'Only admins can add books',
+                                        [
+                                            {
+                                                text: 'OK',
+                                                onPress: () => console.log("NOOO!!!!")
+                                            }
+                                        ],
+                                        {cancelable: false}
+                                    )
+                                }
+                            });
+
+                        }
+                        }
+                            >
                             <Text style={styles.reserveButtonText}> Add book </Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View>
+                        <TouchableOpacity style={styles.signOutButton} onPress={() =>
+                            navigate('Home')}>
+                            <Text style={styles.reserveButtonText}> Sign out </Text>
                         </TouchableOpacity>
                     </View>
 
@@ -226,7 +307,7 @@ export class BookList extends Component {
                     <View style={styles.header}>
                         <Text style={styles.headerText}>- List of Books -</Text>
                     </View>
-                    <Text> Loading </Text>
+                    <ActivityIndicator size="large" color="#E91E63" />
                 </View>
             )
         }
@@ -287,6 +368,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         marginLeft:50,
         marginBottom:45,
+        marginRight:7
+    },
+
+    signOutButton:{
+        backgroundColor: '#E91E63',
+        //borderRadius: 30,
+        borderColor: '#ccc',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom:45,
+        marginLeft:7,
         marginRight:7
     },
     deleteView:{

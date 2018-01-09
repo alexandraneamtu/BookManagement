@@ -25,6 +25,7 @@ import {PrepareBook} from './PrepareBook'
 import {Details} from './Details'
 import {AddBook} from './AddBook'
 import {Chart} from './Chart'
+import LoginForm from "./LoginForm";
 
 
 
@@ -32,7 +33,8 @@ import {Chart} from './Chart'
 
 
 const NavigationApp = StackNavigator({
-    Home: {screen: BookList},
+    Home: {screen: LoginForm},
+    BookList: {screen: BookList},
     PrepareBook: {screen: PrepareBook},
     Details: {screen: Details},
     AddBook: {screen: AddBook},

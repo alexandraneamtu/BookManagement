@@ -33,7 +33,8 @@ export class AddBook extends Component{
     save()
     {
         console.log("----------------------");
-        console.log(items.book);
+        //console.log(items.book);
+        const items = firebaseApp.database().ref().child('books');
         items.push({book :new Book(this.state.newTitle,this.state.newAuthor,this.state.newDescription,require('./img/book_ex.png'))});
 
     }

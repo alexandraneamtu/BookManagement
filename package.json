@@ -15,10 +15,12 @@
     "react-native-charts-wrapper": "^0.3.1",
     "react-native-datepicker-dialog": "0.0.8",
     "react-native-deprecated-custom-components": "^0.1.1",
+    "react-native-easy-toast": "^1.0.9",
     "react-native-mail": "^3.0.4",
     "react-native-popup-dialog": "^0.10.44",
     "react-native-sqlite-storage": "^3.3.3",
-    "react-navigation": "^1.0.0-beta.19"
+    "react-navigation": "^1.0.0-beta.19",
+    "spinner": "^0.3.4"
   },
   "devDependencies": {
     "babel-jest": "21.2.0",
