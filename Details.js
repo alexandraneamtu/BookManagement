@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import {StackNavigator, SafeAreaView} from 'react-navigation';
 import {firebaseApp} from './BookList'
+import {NotificationsAndroid} from 'react-native-notifications';
 
 
 
@@ -34,6 +35,11 @@ export class Details extends Component{
 
         console.log("keeeeeeeeeeeeeeyyyyyyyyyy",index);
         items.child(index).child("book").child("description").set(description);
+         NotificationsAndroid.localNotification({
+             title: "Book Management",
+             body: "Thank you for updating our database!",
+             extra: "data"
+         });
     }
 
      updateBookAuthor(index,author) {
@@ -41,6 +47,11 @@ export class Details extends Component{
 
          console.log("keeeeeeeeeyyyyyyyyyyyyy:",index);
          items.child(index).child("book").child("author").set(author);
+         NotificationsAndroid.localNotification({
+             title: "Book Management",
+             body: "Thank you for updating our database!",
+             extra: "data"
+         });
     }
 
 
